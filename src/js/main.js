@@ -325,10 +325,18 @@ function startLiveClock(timezoneStr) {
 async function loadCityData() {
   try {
     const response = await fetch("./city.json");
-    if (!response.ok) throw new Error("Failed to load city data");
-    cityData = await response.json();
+
+    if (!response.ok) {
+      const altResponse = await fetch("city.json");
+      if (!altResponse.ok) throw new Error("Failed to load city data");
+      cityData = await altResponse.json();
+    } else {
+      cityData = await response.json();
+    }
+
+    console.log("✅ City data loaded successfully from Root");
   } catch (error) {
-    console.error("Error:", error);
+    console.error("❌ Error loading city.json:", error);
   }
 }
 

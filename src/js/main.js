@@ -334,9 +334,9 @@ async function loadCityData() {
       cityData = await response.json();
     }
 
-    console.log("✅ City data loaded successfully from Root");
+    console.log(" City data loaded successfully from Root");
   } catch (error) {
-    console.error("❌ Error loading city.json:", error);
+    console.error(" Error loading city.json:", error);
   }
 }
 
@@ -349,16 +349,31 @@ navItems.forEach((item) => {
 
     const targetView = item.getAttribute("data-view");
 
-    views.forEach((view) => view.classList.remove("active"));
-    navItems.forEach((nav) => nav.classList.remove("active"));
+    const newUrl =
+      window.location.protocol +
+      "//" +
+      window.location.host +
+      window.location.pathname +
+      "?view=" +
+      targetView;
+    window.history.pushState({ path: newUrl, view: targetView }, "", newUrl);
 
-    const targetSection = document.getElementById(`${targetView}-view`);
-    if (targetSection) {
-      targetSection.classList.add("active");
-      item.classList.add("active");
-    }
+    switchView(targetView);
   });
 });
+
+function switchView(viewId) {
+  views.forEach((view) => view.classList.remove("active"));
+  navItems.forEach((nav) => nav.classList.remove("active"));
+
+  const targetSection = document.getElementById(`${viewId}-view`);
+  const targetNavItem = document.querySelector(`[data-view="${viewId}"]`);
+
+  if (targetSection) {
+    targetSection.classList.add("active");
+    if (targetNavItem) targetNavItem.classList.add("active");
+  }
+}
 
 // clear selection btn
 

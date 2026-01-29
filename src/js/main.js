@@ -273,7 +273,6 @@ document
         if (cityName) {
           sunTimes(countryName, countryCode, cityName);
         }
-        // sunTimes(countryName, countryCode, cityName);
         if (regionElement) {
           regionElement.textContent = `${region} • ${subregion}`;
         }
@@ -333,8 +332,6 @@ async function loadCityData() {
     } else {
       cityData = await response.json();
     }
-
-    console.log(" City data loaded successfully from Root");
   } catch (error) {
     console.error(" Error loading city.json:", error);
   }
@@ -436,6 +433,7 @@ async function fetchAndDisplayHolidays(countryCode, year, countryName) {
         .querySelector(".holiday-action-btn")
         .addEventListener("click", () => {
           addToPlans(holiday, "holiday");
+          card.querySelector(".holiday-action-btn").classList.add("saved");
         });
 
       holidayHeader.innerHTML = `<p>Browse public holidays for ${countryName} and plan your trips around them</p>`;
@@ -475,10 +473,6 @@ async function fetchAndDisplayEvents(countryCode, cityName) {
   const cachedData = localStorage.getItem(cacheKey);
 
   if (cachedData) {
-    console.log(
-      `%c [Cache Hit] Loading events for ${cityName} from storage`,
-      "color: #2ecc71; font-weight: bold;",
-    );
     const events = JSON.parse(cachedData);
     renderEventsToUI(events, cityName, eventHeader, eventsContent);
     return;
@@ -1177,7 +1171,7 @@ function renderPlans() {
   });
 }
 
-function removePlan(index) {
+function removePlan(index, card) {
   Swal.fire({
     title: "Remove Plan?",
     text: "Are you sure you want to remove this item from your plans?",
@@ -1246,20 +1240,22 @@ function updateGlobalCounters() {
   const total = savedPlans.length;
 
   const statSaved = document.getElementById("stat-saved");
-  if (statSaved) {
-    statSaved.textContent = total;
-  }
+  statSaved.textContent = total;
 
   const planCounterBadge = document.getElementById("plans-count");
-  if (planCounterBadge) {
-    planCounterBadge.textContent = total;
-    total > 0
-      ? planCounterBadge.classList.remove("hidden")
-      : planCounterBadge.classList.add("hidden");
-  }
+  planCounterBadge.textContent = total;
+  total > 0
+    ? planCounterBadge.classList.remove("hidden")
+    : planCounterBadge.classList.add("hidden");
 }
 
 document.addEventListener("DOMContentLoaded", () => {
   renderPlans();
   if (typeof updateCounts === "function") updateCounts();
+});
+
+window.addEventListener("popstate", (event) => {
+  if (event.state && event.state.view) {
+    switchView(event.state.view);
+  }
 });
